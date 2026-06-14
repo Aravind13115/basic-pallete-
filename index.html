@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Basic Color Palette - Mobile UI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="phone" aria-label="Mobile UI demo">
+    <section class="screen" data-view="login">
+      <header class="app-header">
+        <div class="app-title">
+          <span class="dot" aria-hidden="true"></span>
+          <h1>Chroma</h1>
+        </div>
+        <p class="subtle">Sign in to view the palette</p>
+      </header>
+
+      <section class="card" aria-label="Login form">
+        <h2>Login</h2>
+
+        <form id="loginForm" autocomplete="on">
+          <label class="field">
+            <span class="label">Email</span>
+            <input id="email" name="email" type="email" inputmode="email" autocomplete="username" required placeholder="demo@chroma.local" />
+          </label>
+
+          <label class="field">
+            <span class="label">Password</span>
+            <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="demo1234" />
+          </label>
+
+          <div class="row">
+            <button class="btn primary" type="submit">Sign in</button>
+          </div>
+
+          <div id="loginError" class="error" role="alert" aria-live="polite"></div>
+          <p class="helper">
+            Demo credentials are pre-seeded: <strong>demo@chroma.local</strong> / <strong>demo1234</strong>.
+          </p>
+        </form>
+      </section>
+
+      <footer class="nav" aria-label="Bottom navigation">
+        <button class="nav-item is-active" type="button" disabled>Login</button>
+        <button class="nav-item" type="button" disabled>Explore</button>
+        <button class="nav-item" type="button" disabled>Profile</button>
+      </footer>
+    </section>
+
+    <section class="screen" data-view="app" hidden>
+      <header class="app-header">
+        <div class="app-title">
+          <span class="dot" aria-hidden="true"></span>
+          <h1>Chroma</h1>
+        </div>
+        <div class="subtle-row">
+          <p class="subtle" style="margin:0;">A 3-color mobile palette (contrast-safe)</p>
+          <button id="logoutBtn" class="mini-ghost" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2>Palette</h2>
+
+
+      <div class="swatches" role="list" aria-label="Color swatches">
+        <div class="swatch" role="listitem">
+          <div class="chip" style="background: var(--bg);"></div>
+          <div class="meta">
+            <div class="name">Background</div>
+            <div class="hex">#F7FAFF</div>
+          </div>
+        </div>
+        <div class="swatch" role="listitem">
+          <div class="chip primary" style="background: var(--primary);"></div>
+          <div class="meta">
+            <div class="name">Primary</div>
+            <div class="hex">#2563EB</div>
+          </div>
+        </div>
+        <div class="swatch" role="listitem">
+          <div class="chip accent" style="background: var(--accent);"></div>
+          <div class="meta">
+            <div class="name">Accent</div>
+            <div class="hex">#0F172A</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Apply to UI elements</h2>
+      <div class="row">
+        <button class="btn primary" type="button">Primary Action</button>
+        <button class="btn ghost" type="button">Secondary</button>
+      </div>
+
+      <p class="body">
+        Text uses <code>--accent</code> for strong readability on the light background.
+        Buttons use <code>--primary</code> with white text for high contrast.
+      </p>
+
+      <div class="badge" role="note">Accent used for emphasis</div>
+    </section>
+
+    <footer class="nav">
+      <button class="nav-item is-active" type="button">Home</button>
+      <button class="nav-item" type="button">Search</button>
+      <button class="nav-item" type="button">Profile</button>
+    </footer>
+  </main>
+  <script src="login.js"></script>
+</body>
+</html>
+
+

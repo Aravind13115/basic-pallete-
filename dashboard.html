@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Glass Dashboard — Chroma</title>
+
+  <!-- Tailwind (layout helpers only; core glass styling is scoped in glass-dashboard.css) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="glass-dashboard.css" />
+</head>
+
+<body class="bg-black">
+  <!-- Abstract mesh gradient background (glass-app scoped) -->
+  <div class="glass-app" id="glassApp">
+    <div class="glass-app__bg" aria-hidden="true"></div>
+
+    <div class="glass-layout">
+      <!-- Sidebar (sticky, glass) -->
+      <aside class="glass-sidebar glass-surface" aria-label="Sidebar navigation">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-11 h-11 rounded-3xl bg-gradient-to-br from-cyan-400/80 to-pink-500/70 border border-white/20 shadow-[0_18px_45px_rgba(0,0,0,0.35)]" aria-hidden="true"></div>
+          <div>
+            <div class="text-white font-extrabold tracking-wide leading-none">Chroma</div>
+            <div class="text-cyan-100/70 text-xs mt-1 font-semibold">Glass Dashboard</div>
+          </div>
+        </div>
+
+        <nav class="glass-nav" aria-label="Main navigation">
+          <button class="glass-nav__item is-active" type="button" data-nav="dashboard">
+            <span class="inline-flex w-7 h-7 items-center justify-center rounded-xl border border-white/10 bg-white/5" aria-hidden="true">📊</span>
+            Dashboard
+          </button>
+          <button class="glass-nav__item" type="button" data-nav="analytics">
+            <span class="inline-flex w-7 h-7 items-center justify-center rounded-xl border border-white/10 bg-white/5" aria-hidden="true">📈</span>
+            Analytics
+          </button>
+          <button class="glass-nav__item" type="button" data-nav="profile">
+            <span class="inline-flex w-7 h-7 items-center justify-center rounded-xl border border-white/10 bg-white/5" aria-hidden="true">👤</span>
+            User Profile
+          </button>
+          <button class="glass-nav__item" type="button" data-nav="settings">
+            <span class="inline-flex w-7 h-7 items-center justify-center rounded-xl border border-white/10 bg-white/5" aria-hidden="true">⚙️</span>
+            Settings
+          </button>
+          <button class="glass-nav__item" type="button" data-nav="notifications">
+            <span class="inline-flex w-7 h-7 items-center justify-center rounded-xl border border-white/10 bg-white/5" aria-hidden="true">🔔</span>
+            Notifications
+          </button>
+        </nav>
+
+        <div class="mt-6 pt-4 border-t border-white/10">
+          <div class="flex items-center gap-3">
+            <div class="glass-avatar" aria-hidden="true"></div>
+            <div>
+              <div class="text-white font-extrabold text-sm">Demo User</div>
+              <div class="text-cyan-100/60 text-xs font-semibold">demo@chroma.local</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <section>
+        <!-- Top navbar -->
+        <header class="glass-topbar glass-surface" aria-label="Top navigation">
+          <div class="glass-search w-full">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white/70" aria-hidden="true">
+              <path d="M10.8 18.2a7.4 7.4 0 1 0 0-14.8 7.4 7.4 0 0 0 0 14.8Z" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M16.7 16.7 21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <input id="globalSearch" class="bg-transparent" type="text" placeholder="Search dashboard…" aria-label="Search dashboard" />
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button id="themeToggle" class="glass-btn" type="button" aria-label="Toggle theme">
+              <span id="themeToggleText" class="font-extrabold">Light Glass</span>
+              <span aria-hidden="true">🌓</span>
+            </button>
+
+            <button class="glass-btn w-12 justify-center" type="button" aria-label="Profile">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-xl border border-white/20 bg-white/5" aria-hidden="true">👤</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Utility row (required buttons) -->
+        <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button id="addWidgetBtn" class="glass-btn glass-btn--primary" type="button">+ Add New Widget</button>
+          <button id="exportCsvBtn" class="glass-btn" type="button">Export CSV Data</button>
+          <button id="clearNotificationsBtn" class="glass-btn glass-btn--danger" type="button">Clear Notifications</button>
+        </div>
+
+        <!-- View containers (switched without page reload) -->
+        <div class="mt-5">
+          <!-- Dashboard view -->
+          <div class="view is-active" id="view-dashboard" data-view="dashboard">
+            <div class="glass-grid-3" aria-label="Metric cards">
+              <div class="glass-card glass-surface glass-card glow-hover" aria-label="Total Users metric">
+                <h3 class="font-extrabold">Total Users</h3>
+                <div class="glass-metric" id="metricUsers">128,421</div>
+                <div class="muted">↑ 3.9% weekly growth</div>
+              </div>
+              <div class="glass-card glass-surface glass-card glow-hover" aria-label="Revenue metric">
+                <h3 class="font-extrabold">Revenue ($)</h3>
+                <div class="glass-metric" id="metricRevenue">$94,108</div>
+                <div class="muted">↑ 8.2% momentum</div>
+              </div>
+              <div class="glass-card glass-surface glass-card glow-hover" aria-label="Active Sessions metric">
+                <h3 class="font-extrabold">Active Sessions</h3>
+                <div class="glass-metric" id="metricSessions">4,762</div>
+                <div class="muted">Stable • low churn</div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-14 mt-14">
+              <!-- Chart area -->
+              <div class="lg:col-span-2 glass-card glass-surface" aria-label="Interactive chart">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 class="text-white font-extrabold">Real-time Revenue Chart</h3>
+                    <p class="text-cyan-100/70 text-sm font-semibold mt-1">Animated placeholder chart (updates every ~1s)</p>
+                  </div>
+
+                  <div class="flex gap-2 bg-white/3 border border-white/10 rounded-2xl p-1">
+                    <button class="glass-btn px-3 py-2" type="button" data-range="7D" data-chart-range="active">7D</button>
+                    <button class="glass-btn px-3 py-2" type="button" data-range="30D" data-chart-range="inactive">30D</button>
+                    <button class="glass-btn px-3 py-2" type="button" data-range="90D" data-chart-range="inactive">90D</button>
+                  </div>
+                </div>
+
+                <div class="mt-5">
+                  <div class="relative h-64">
+                    <svg id="chartSvg" class="w-full h-full" viewBox="0 0 520 220" role="img" aria-label="Revenue chart placeholder">
+                      <defs>
+                        <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0" stop-color="rgba(34,211,238,0.22)" />
+                          <stop offset="1" stop-color="rgba(34,211,238,0.02)" />
+                        </linearGradient>
+                      </defs>
+
+                      <!-- grid lines -->
+                      <g opacity="0.9">
+                        <path d="M40 180 H480" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+                        <path d="M40 130 H480" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+                        <path d="M40 80 H480" stroke="rgba(255,255,255,0.12)" stroke-width="1" />
+                      </g>
+
+                      <!-- area + line + points -->
+                      <path id="chartArea" d="M40 180 L480 180" fill="url(#areaFill)" opacity="0.95" />
+                      <path id="chartLine" d="M40 180 L480 180" fill="none" stroke="rgba(34,211,238,0.95)" stroke-width="3" stroke-linecap="round" />
+                      <g id="chartPoints"></g>
+                    </svg>
+                  </div>
+
+                  <div class="mt-3 flex items-center gap-4 text-sm font-semibold">
+                    <span class="inline-flex w-2.5 h-2.5 rounded-full bg-cyan-300 shadow-[0_0_0_6px_rgba(34,211,238,0.12)]" aria-hidden="true"></span>
+                    <span class="text-cyan-100/80">Growth</span>
+                    <span id="chartStatus" class="text-white/60">• updating…</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Activity Feed (scrollable + dismiss) -->
+              <div class="glass-card glass-surface" aria-label="Recent activity">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 class="text-white font-extrabold">Recent Activity</h3>
+                    <p class="text-cyan-100/70 text-sm font-semibold mt-1">Dismiss individual alerts</p>
+                  </div>
+                  <button id="refreshActivityBtn" class="glass-btn" type="button" aria-label="Refresh notifications">Refresh</button>
+                </div>
+
+                <ul class="glass-list mt-4" id="notificationsList" aria-label="Notification list"></ul>
+              </div>
+
+              <!-- Live Quick Actions (To-Do Quick Tasks) -->
+              <div class="glass-card glass-surface lg:col-span-3" aria-label="Quick tasks">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h3 class="text-white font-extrabold">To-Do Quick Tasks</h3>
+                    <p class="text-cyan-100/70 text-sm font-semibold mt-1">Add tasks and delete them instantly</p>
+                  </div>
+                  <div class="flex gap-2 items-center">
+                    <input id="taskInput" class="w-64 max-w-full glass-search flex-1 !p-3" type="text" placeholder="Type a quick task…" aria-label="New task" />
+                    <button id="addTaskBtn" class="glass-btn glass-btn--primary" type="button">Add Task</button>
+                  </div>
+                </div>
+
+                <ul class="mt-5" id="tasksList" aria-label="Task list"></ul>
+              </div>
+            </div>
+
+            <div id="dynamicWidgets" class="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-4" aria-label="Dynamic widgets area"></div>
+          </div>
+
+          <!-- Analytics view -->
+          <div class="view" id="view-analytics" data-view="analytics">
+            <div class="glass-card glass-surface">
+              <h3 class="text-white font-extrabold">Analytics</h3>
+              <p class="text-cyan-100/70 text-sm font-semibold mt-2">This is a functional placeholder view. Navigation switches without reloading.</p>
+              <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card glass-surface glass-card glow-hover"><h3 class="font-extrabold">Conversion Rate</h3><div class="text-3xl font-extrabold mt-2">4.76%</div><div class="muted">Slight dip ↓ 0.6%</div></div>
+                <div class="glass-card glass-surface glass-card glow-hover"><h3 class="font-extrabold">Avg. Session</h3><div class="text-3xl font-extrabold mt-2">6m 18s</div><div class="muted">Upward trend ↑ 2.1%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile view -->
+          <div class="view" id="view-profile" data-view="profile">
+            <div class="glass-card glass-surface">
+              <h3 class="text-white font-extrabold">User Profile</h3>
+              <div class="mt-4 flex items-center gap-4">
+                <div class="glass-avatar" aria-hidden="true"></div>
+                <div>
+                  <div class="text-white font-extrabold">Demo User</div>
+                  <div class="text-cyan-100/70 text-sm font-semibold">demo@chroma.local</div>
+                </div>
+              </div>
+              <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-card glass-surface glow-hover"><h3 class="font-extrabold">Plan</h3><div class="text-2xl font-extrabold mt-2">Pro Glass</div></div>
+                <div class="glass-card glass-surface glow-hover"><h3 class="font-extrabold">Member Since</h3><div class="text-2xl font-extrabold mt-2">2024</div></div>
+                <div class="glass-card glass-surface glow-hover"><h3 class="font-extrabold">Status</h3><div class="text-2xl font-extrabold mt-2">Active</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings view -->
+          <div class="view" id="view-settings" data-view="settings">
+            <div class="glass-card glass-surface">
+              <h3 class="text-white font-extrabold">Settings</h3>
+              <p class="text-cyan-100/70 text-sm font-semibold mt-2">Try the theme toggle in the top navbar.</p>
+              <div class="mt-6 flex flex-wrap gap-3">
+                <button class="glass-btn" type="button" id="prefReduceMotion">Reduce Motion: Off</button>
+                <button class="glass-btn" type="button">Notifications: On</button>
+                <button class="glass-btn" type="button">Security: Enabled</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications view -->
+          <div class="view" id="view-notifications" data-view="notifications">
+            <div class="glass-card glass-surface">
+              <h3 class="text-white font-extrabold">Notifications</h3>
+              <p class="text-cyan-100/70 text-sm font-semibold mt-2">This view mirrors the notification feed. Dismiss items in either place.</p>
+              <div class="mt-4 glass-card glass-surface"><ul class="glass-list" id="notificationsListMirror" aria-label="Notification list mirror"></ul></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Glass Dashboard — Vanilla JS
+     * - Sidebar navigation switches views without reload
+     * - Theme toggle switches Light Glass vs Dark Glass
+     * - Notifications list is dismissible + clearable
+     * - Chart placeholder animates as "real-time"
+     * - Quick tasks can be added/deleted dynamically
+     * - Export CSV downloads current tasks + notification summaries
+     */
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    // -----------------------------
+    // View switching
+    // -----------------------------
+    const navButtons = $$('[data-nav]');
+    const views = $$('[data-view]');
+
+    function setActiveView(viewId){
+      navButtons.forEach(btn => {
+        const isActive = btn.dataset.nav === viewId;
+        btn.classList.toggle('is-active', isActive);
+      });
+      views.forEach(v => {
+        const isActive = v.dataset.view === viewId;
+        v.classList.toggle('is-active', isActive);
+      });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => setActiveView(btn.dataset.nav));
+    });
+
+    // -----------------------------
+    // Theme toggle (Light Glass vs Dark Glass)
+    // -----------------------------
+    // We change glass vars + background overlay for the app.
+    let theme = 'light';
+    const themeToggle = $('#themeToggle');
+    const themeToggleText = $('#themeToggleText');
+
+    function applyTheme(next){
+      theme = next;
+      if(theme === 'light'){
+        // Light glass: brighter frosted surfaces
+        document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.05)');
+        document.documentElement.style.setProperty('--glass-border', 'rgba(255,255,255,0.12)');
+        themeToggleText.textContent = 'Light Glass';
+        $('#glassApp').classList.remove('theme-dark-glass');
+      } else {
+        // Dark glass: deeper surfaces
+        document.documentElement.style.setProperty('--glass-bg', 'rgba(255,255,255,0.04)');
+        document.documentElement.style.setProperty('--glass-border', 'rgba(255,255,255,0.10)');
+        themeToggleText.textContent = 'Dark Glass';
+        $('#glassApp').classList.add('theme-dark-glass');
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      applyTheme(theme === 'light' ? 'dark' : 'light');
+    });
+
+    applyTheme('light');
+
+    // -----------------------------
+    // Data model for widgets
+    // -----------------------------
+    const state = {
+      notifications: [
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), tag: 'OK', title: 'Cache hit rate improved', sub: 'Latency -12.4% in the last hour', time: '12:14' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), tag: 'HOT', title: 'Spike in signups', sub: 'Campaign attribution: Neon Search', time: '12:09' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), tag: 'OK', title: 'Fraud filters stable', sub: 'False positives maintained under 0.3%', time: '12:04' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), tag: 'OK', title: 'Webhook retries reduced', sub: 'Upstream stability: +6.1%', time: '11:57' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), tag: 'HOT', title: 'Payment approvals up', sub: 'Checkout success ↑ 2.8%', time: '11:49' }
+      ],
+      tasks: [
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), text: 'Audit onboarding funnel' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), text: 'Update pricing experiment' },
+        { id: crypto.randomUUID?.() ?? String(Date.now()+Math.random()), text: 'Review anomaly alerts' }
+      ],
+      dynamicWidgets: []
+    };
+
+    // -----------------------------
+    // Notifications rendering + Dismiss
+    // -----------------------------
+    const notificationsList = $('#notificationsList');
+    const notificationsListMirror = $('#notificationsListMirror');
+
+    function tagPill(tag){
+      const base = 'inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-extrabold border';
+      if(tag === 'HOT'){
+        return `<span class="${base} text-pink-200 border-pink-300/40 bg-pink-500/10">${tag}</span>`;
+      }
+      return `<span class="${base} text-cyan-200 border-cyan-300/40 bg-cyan-400/10">${tag}</span>`;
+    }
+
+    function createNotificationRow(n){
+      const li = document.createElement('li');
+      li.className = 'glass-row';
+      li.dataset.notifId = n.id;
+      li.innerHTML = `
+        <div class="flex items-start gap-12 w-full">
+          <div>
+            ${tagPill(n.tag)}
+          </div>
+          <div class="flex-1">
+            <div class="glass-row__title">${escapeHtml(n.title)}</div>
+            <div class="glass-row__sub">${escapeHtml(n.sub)}</div>
+          </div>
+          <div class="flex flex-col items-end gap-2">
+            <div class="glass-row__meta">${escapeHtml(n.time)}</div>
+            <button class="glass-btn glass-btn--danger" type="button" data-dismiss="${n.id}" aria-label="Dismiss notification">
+              Dismiss
+            </button>
+          </div>
+        </div>
+      `;
+
+      const btn = li.querySelector('[data-dismiss]');
+      btn.addEventListener('click', () => {
+        dismissNotification(n.id);
+      });
+
+      return li;
+    }
+
+    function renderNotifications(){
+      const renderInto = (ul) => {
+        ul.innerHTML = '';
+        state.notifications.forEach(n => ul.appendChild(createNotificationRow(n)));
+      };
+
+      renderInto(notificationsList);
+      if(notificationsListMirror){
+        renderInto(notificationsListMirror);
+        // ensure dismiss handlers still work on mirror nodes
+        // (they are wired inside createNotificationRow)
+      }
+    }
+
+    function dismissNotification(id){
+      state.notifications = state.notifications.filter(n => n.id !== id);
+      renderNotifications();
+    }
+
+    $('#clearNotificationsBtn').addEventListener('click', () => {
+      state.notifications = [];
+      renderNotifications();
+    });
+
+    $('#refreshActivityBtn').addEventListener('click', () => {
+      // functional refresh: shuffle and add one synthetic alert
+      const pick = () => {
+        const samples = [
+          ['OK','Latency stable','No drift detected in the last 30 minutes','12:18'],
+          ['HOT','New incident detected','Retry queue spiking; auto-remediation applied','12:16'],
+          ['OK','Model calibration','Confidence intervals tightened','12:15'],
+          ['HOT','Traffic burst','Regional requests increased sharply','12:13']
+        ];
+        const s = samples[Math.floor(Math.random()*samples.length)];
+        return { id: String(Date.now()+Math.random()), tag: s[0], title: s[1], sub: s[2], time: s[3] };
+      };
+      state.notifications = [pick(), ...state.notifications].slice(0, 12);
+      renderNotifications();
+    });
+
+    // -----------------------------
+    // Quick tasks rendering + add/delete
+    // -----------------------------
+    const tasksList = $('#tasksList');
+    const taskInput = $('#taskInput');
+
+    function createTaskRow(task){
+      const li = document.createElement('li');
+      li.className = 'glass-row';
+      li.dataset.taskId = task.id;
+      li.innerHTML = `
+        <div class="flex-1">
+          <div class="glass-row__title">${escapeHtml(task.text)}</div>
+          <div class="glass-row__sub">Click Delete to remove this task.</div>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button class="glass-btn glass-btn--danger" type="button" data-delete-task="${task.id}">Delete</button>
+        </div>
+      `;
+
+      li.querySelector('[data-delete-task]').addEventListener('click', () => {
+        state.tasks = state.tasks.filter(t => t.id !== task.id);
+        renderTasks();
+      });
+
+      return li;
+    }
+
+    function renderTasks(){
+      tasksList.innerHTML = '';
+      state.tasks.forEach(t => tasksList.appendChild(createTaskRow(t)));
+    }
+
+    $('#addTaskBtn').addEventListener('click', () => {
+      const text = (taskInput.value || '').trim();
+      if(!text) return;
+      state.tasks.push({ id: String(Date.now()+Math.random()), text });
+      taskInput.value = '';
+      renderTasks();
+    });
+
+    taskInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') $('#addTaskBtn').click();
+    });
+
+    // -----------------------------
+    // Dynamic widgets: Add New Widget
+    // -----------------------------
+    const dynamicWidgets = $('#dynamicWidgets');
+    const addWidgetBtn = $('#addWidgetBtn');
+
+    function addWidget(){
+      const adjectives = ['Neon','Frost','Quantum','Pulse','Astra','Spectral','Vanta'];
+      const nouns = ['Ops', 'Revenue', 'Users', 'Traffic', 'Latency', 'Security', 'Engagement'];
+      const a = adjectives[Math.floor(Math.random()*adjectives.length)];
+      const n = nouns[Math.floor(Math.random()*nouns.length)];
+
+      const widget = {
+        id: String(Date.now()+Math.random()),
+        title: `${a} ${n}`,
+        value: String(Math.floor(1000 + Math.random()*9000)),
+        sub: 'Auto-generated glass widget'
+      };
+
+      state.dynamicWidgets.push(widget);
+
+      const card = document.createElement('div');
+      card.className = 'glass-card glass-surface glass-card glow-hover';
+      card.dataset.widgetId = widget.id;
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-white font-extrabold text-sm">${escapeHtml(widget.title)}</h3>
+            <div class="glass-metric text-white">${escapeHtml(widget.value)}</div>
+            <div class="muted">${escapeHtml(widget.sub)}</div>
+          </div>
+          <button class="glass-btn glass-btn--danger" type="button" data-remove-widget="${widget.id}">Remove</button>
+        </div>
+      `;
+
+      card.querySelector('[data-remove-widget]').addEventListener('click', () => {
+        state.dynamicWidgets = state.dynamicWidgets.filter(w => w.id !== widget.id);
+        card.remove();
+      });
+
+      dynamicWidgets.appendChild(card);
+    }
+
+    addWidgetBtn.addEventListener('click', addWidget);
+
+    // -----------------------------
+    // Export CSV
+    // -----------------------------
+    $('#exportCsvBtn').addEventListener('click', () => {
+      const rows = [];
+      rows.push(['type', 'title', 'detail'].join(','));
+
+      state.notifications.forEach(n => {
+        rows.push(['notification', n.title, n.sub].map(csvCell).join(','));
+      });
+      state.tasks.forEach(t => {
+        rows.push(['task', t.text, ''].map(csvCell).join(','));
+      });
+
+      const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chroma-glass-dashboard-export-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // -----------------------------
+    // Chart placeholder (animated real-time look)
+    // -----------------------------
+    const chartArea = $('#chartArea');
+    const chartLine = $('#chartLine');
+    const chartPoints = $('#chartPoints');
+    const chartStatus = $('#chartStatus');
+
+    let range = 7; // number of points
+    const chartRangeButtons = $$('[data-range]');
+
+    chartRangeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.range;
+        range = val === '7D' ? 10 : val === '30D' ? 16 : 22;
+
+        chartRangeButtons.forEach(b => b.classList.remove('glass-btn--primary'));
+        btn.classList.add('glass-btn--primary');
+
+        chartStatus.textContent = `• range: ${val} (live)`;
+      });
+    });
+
+    function buildPath(values){
+      // values: array of y values in [0..1]
+      const W = 520, H = 220;
+      const x0 = 40, x1 = 480;
+      const y0 = 180, y1 = 60;
+      const n = values.length;
+      const step = (x1 - x0) / (n - 1);
+
+      const pts = values.map((v,i) => {
+        const x = x0 + i*step;
+        const y = y0 - v * (y0 - y1);
+        return {x,y};
+      });
+
+      const lineD = pts.map((p,i) => `${i===0?'M':'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+
+      const areaD = [
+        lineD,
+        `L ${pts[pts.length-1].x.toFixed(1)} ${y0}`,
+        `L ${pts[0].x.toFixed(1)} ${y0}`,
+        'Z'
+      ].join(' ');
+
+      return { lineD, areaD, pts };
+    }
+
+    function renderChart(values){
+      const { lineD, areaD, pts } = buildPath(values);
+      chartLine.setAttribute('d', lineD);
+      chartArea.setAttribute('d', areaD);
+
+      chartPoints.innerHTML = '';
+      pts.forEach((p, idx) => {
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', p.x);
+        c.setAttribute('cy', p.y);
+        c.setAttribute('r', idx === pts.length-1 ? '6' : '4');
+        c.setAttribute('fill', 'rgba(34,211,238,0.95)');
+        c.setAttribute('filter', 'drop-shadow(0 0 12px rgba(34,211,238,0.55))');
+        chartPoints.appendChild(c);
+      });
+    }
+
+    let t = 0;
+    let values = Array.from({length: range}, (_,i) => 0.45 + 0.2*Math.sin(i/1.4));
+    renderChart(values);
+
+    const interval = setInterval(() => {
+      // simple evolving signal
+      t += 1;
+      const next = [];
+      for(let i=0;i<values.length;i++){
+        const drift = 0.08*Math.sin((i+t)/3.1);
+        const noise = (Math.random()-0.5)*0.06;
+        const base = 0.55 + 0.12*Math.sin((t+i)/4.2);
+        next.push(clamp(base + drift + noise, 0.08, 0.95));
+      }
+      values = next;
+      renderChart(values);
+      chartStatus.textContent = '• updating…';
+    }, 950);
+
+    // -----------------------------
+    // Initial render
+    // -----------------------------
+    renderNotifications();
+    renderTasks();
+
+    // Settings: reduce motion toggle
+    const prefReduceMotion = $('#prefReduceMotion');
+    let reduceMotion = false;
+    prefReduceMotion.addEventListener('click', () => {
+      reduceMotion = !reduceMotion;
+      prefReduceMotion.textContent = `Reduce Motion: ${reduceMotion ? 'On' : 'Off'}`;
+      if(reduceMotion){
+        clearInterval(interval);
+      }
+    });
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','<')
+        .replaceAll('>','>')
+        .replaceAll('"','"')
+        .replaceAll("'",'&#039;');
+    }
+
+    function csvCell(value){
+      const s = String(value ?? '');
+      const escaped = s.replaceAll('"','""');
+      return `"${escaped}"`;
+    }
+
+    function clamp(v, min, max){
+      return Math.max(min, Math.min(max, v));
+    }
+  </script>
+</body>
+</html>
+
